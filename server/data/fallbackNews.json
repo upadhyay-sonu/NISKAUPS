@@ -1,0 +1,134 @@
+{
+  "topNews": [
+    {
+      "title": "Global Book Markets Show Strong Growth in 2024",
+      "description": "The international book publishing industry continues to expand with digital platforms driving significant growth across multiple genres.",
+      "image": "https://images.unsplash.com/photo-1507842217343-583f20270319?w=500&h=300&fit=crop",
+      "source": "Publishing Today",
+      "url": "https://publishingtoday.com",
+      "publishedAt": "2024-12-01T12:00:00Z",
+      "provider": "Fallback"
+    },
+    {
+      "title": "New Technologies Transforming the Reading Experience",
+      "description": "E-readers, audiobooks, and interactive digital platforms are revolutionizing how people consume literature in the modern era.",
+      "image": "https://images.unsplash.com/photo-1502195905929-c1f1f0054e76?w=500&h=300&fit=crop",
+      "source": "Tech & Literature",
+      "url": "https://techliterature.com",
+      "publishedAt": "2024-11-28T10:30:00Z",
+      "provider": "Fallback"
+    },
+    {
+      "title": "Award Season Celebrates Outstanding Literary Works",
+      "description": "Major literary awards recognize diverse voices and groundbreaking narratives from authors around the world.",
+      "image": "https://images.unsplash.com/photo-1507842217343-583f20270319?w=500&h=300&fit=crop",
+      "source": "Literary Awards",
+      "url": "https://literaryawards.com",
+      "publishedAt": "2024-11-25T14:20:00Z",
+      "provider": "Fallback"
+    },
+    {
+      "title": "Independent Publishers Flourish in Digital Age",
+      "description": "Self-publishing platforms enable authors to bring their stories directly to readers, disrupting traditional publishing models.",
+      "image": "https://images.unsplash.com/photo-1464207687429-7505649dae38?w=500&h=300&fit=crop",
+      "source": "Publishing News",
+      "url": "https://publishingnews.com",
+      "publishedAt": "2024-11-22T09:15:00Z",
+      "provider": "Fallback"
+    },
+    {
+      "title": "Literacy Initiatives Create Global Impact",
+      "description": "Organizations worldwide work to improve literacy rates and provide access to quality educational resources and books.",
+      "image": "https://images.unsplash.com/photo-1507842217343-583f20270319?w=500&h=300&fit=crop",
+      "source": "Global Education",
+      "url": "https://globaleducation.com",
+      "publishedAt": "2024-11-20T11:45:00Z",
+      "provider": "Fallback"
+    }
+  ],
+  "bookNews": [
+    {
+      "title": "Bestselling Authors Announce New Book Releases",
+      "description": "Popular authors unveil their latest works with exciting new narratives and themes for their devoted readers.",
+      "image": "https://images.unsplash.com/photo-1507842217343-583f20270319?w=500&h=300&fit=crop",
+      "source": "Bookshelf Reviews",
+      "url": "https://bookshelfreviews.com",
+      "publishedAt": "2024-12-02T13:00:00Z",
+      "provider": "Fallback"
+    },
+    {
+      "title": "Literary Fiction Dominates Sales Charts",
+      "description": "Contemporary and classic literary fiction continue to captivate readers with compelling storytelling and artistic merit.",
+      "image": "https://images.unsplash.com/photo-1502195905929-c1f1f0054e76?w=500&h=300&fit=crop",
+      "source": "Book Sales Report",
+      "url": "https://booksalesreport.com",
+      "publishedAt": "2024-11-30T15:30:00Z",
+      "provider": "Fallback"
+    },
+    {
+      "title": "Fantasy and Sci-Fi Genres Break Records",
+      "description": "Speculative fiction genres experience unprecedented growth with groundbreaking series and standalone novels leading the market.",
+      "image": "https://images.unsplash.com/photo-1507842217343-583f20270319?w=500&h=300&fit=crop",
+      "source": "Genre Weekly",
+      "url": "https://genreweekly.com",
+      "publishedAt": "2024-11-27T10:00:00Z",
+      "provider": "Fallback"
+    },
+    {
+      "title": "Young Adult Authors Inspire Next Generation",
+      "description": "YA literature continues to resonate with young readers while addressing important social issues and personal growth.",
+      "image": "https://images.unsplash.com/photo-1464207687429-7505649dae38?w=500&h=300&fit=crop",
+      "source": "YA Today",
+      "url": "https://yatoday.com",
+      "publishedAt": "2024-11-24T12:45:00Z",
+      "provider": "Fallback"
+    },
+    {
+      "title": "Memoir and Biography Collections Expand",
+      "description": "Personal narratives and biographical works provide intimate insights into the lives of notable figures and everyday people.",
+      "image": "https://images.unsplash.com/photo-1507842217343-583f20270319?w=500&h=300&fit=crop",
+      "source": "Life Stories",
+      "url": "https://lifestories.com",
+      "publishedAt": "2024-11-21T14:20:00Z",
+      "provider": "Fallback"
+    }
+  ],
+  "trendingNews": [
+    {
+      "title": "Bestseller Lists Show Diverse Reading Preferences",
+      "description": "Current bestseller lists reflect varied reading tastes with multiple genres competing for reader attention.",
+      "image": "https://images.unsplash.com/photo-1502195905929-c1f1f0054e76?w=500&h=300&fit=crop",
+      "source": "Weekly Charts",
+      "url": "https://weeklycharts.com",
+      "publishedAt": "2024-12-01T16:00:00Z",
+      "provider": "Fallback"
+    },
+    {
+      "title": "Publishing Industry Embraces Sustainability",
+      "description": "Publishers implement eco-friendly practices in paper production, printing, and distribution to reduce environmental impact.",
+      "image": "https://images.unsplash.com/photo-1507842217343-583f20270319?w=500&h=300&fit=crop",
+      "source": "Green Publishing",
+      "url": "https://greenpublishing.com",
+      "publishedAt": "2024-11-29T11:30:00Z",
+      "provider": "Fallback"
+    },
+    {
+      "title": "Book Clubs Experience Global Renaissance",
+      "description": "Virtual and in-person book clubs bring readers together to discuss literature and build communities around shared interests.",
+      "image": "https://images.unsplash.com/photo-1507842217343-583f20270319?w=500&h=300&fit=crop",
+      "source": "Community Books",
+      "url": "https://communitybooks.com",
+      "publishedAt": "2024-11-26T13:15:00Z",
+      "provider": "Fallback"
+    },
+    {
+      "title": "Author Interviews Reveal Creative Process",
+      "description": "Renowned authors discuss their writing journey, inspiration sources, and techniques that shaped their most celebrated works.",
+      "image": "https://images.unsplash.com/photo-1464207687429-7505649dae38?w=500&h=300&fit=crop",
+      "source": "Author Spotlight",
+      "url": "https://authorspotlight.com",
+      "publishedAt": "2024-11-23T09:45:00Z",
+      "provider": "Fallback"
+    }
+  ]
+}

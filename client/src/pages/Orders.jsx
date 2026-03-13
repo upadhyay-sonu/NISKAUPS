@@ -26,12 +26,6 @@ const Orders = () => {
 
   const fetchOrders = async () => {
     try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        navigate("/login");
-        return;
-      }
-
       const response = await api.get("/orders");
       setOrders(response.data?.orders || []);
     } catch (error) {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Heart, ShoppingCart, Zap } from "lucide-react";
@@ -12,14 +12,24 @@ const Books = () => {
     const [loading, setLoading] = useState(false);
     const [filters, setFilters] = useState({
         minPrice: 0,
-        maxPrice: 100,
+        maxPrice: 1000,
         sort: "newest",
     });
+    const filterTimeoutRef = useRef(null);
 
     useEffect(() => {
         fetchProducts();
         fetchFavorites();
-    }, [category, filters]);
+    }, [category]);
+
+    // Debounced filter effect
+    useEffect(() => {
+        if (filterTimeoutRef.current) clearTimeout(filterTimeoutRef.current);
+        filterTimeoutRef.current = setTimeout(() => {
+            fetchProducts();
+        }, 500);
+        return () => clearTimeout(filterTimeoutRef.current);
+    }, [filters]);
 
     const fetchProducts = async () => {
         setLoading(true);
@@ -171,7 +181,7 @@ const Books = () => {
                                 <input
                                     type="range"
                                     min="0"
-                                    max="200"
+                                    max="1000"
                                     value={filters.maxPrice}
                                     onChange={(e) =>
                                         setFilters({

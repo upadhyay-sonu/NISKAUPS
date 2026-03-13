@@ -1,14 +1,28 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
+
+const getInitialUser = () => {
+  try {
+    const user = localStorage.getItem("user");
+    return user && user !== "undefined" ? JSON.parse(user) : null;
+  } catch {
+    return null;
+  }
+};
+
+const getInitialToken = () => {
+  const token = localStorage.getItem("token");
+  return token && token !== "undefined" ? token : null;
+};
 
 const initialState = {
-  user: localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null,
-  token: localStorage.getItem('token') || null,
+  user: getInitialUser(),
+  token: getInitialToken(),
   isLoading: false,
   error: null,
 };
 
 const authSlice = createSlice({
-  name: 'auth',
+  name: "auth",
   initialState,
   reducers: {
     // Register
@@ -20,8 +34,8 @@ const authSlice = createSlice({
       state.isLoading = false;
       state.user = action.payload.user;
       state.token = action.payload.token;
-      localStorage.setItem('user', JSON.stringify(action.payload.user));
-      localStorage.setItem('token', action.payload.token);
+      localStorage.setItem("user", JSON.stringify(action.payload.user));
+      localStorage.setItem("token", action.payload.token);
     },
     registerFailure: (state, action) => {
       state.isLoading = false;
@@ -37,8 +51,8 @@ const authSlice = createSlice({
       state.isLoading = false;
       state.user = action.payload.user;
       state.token = action.payload.token;
-      localStorage.setItem('user', JSON.stringify(action.payload.user));
-      localStorage.setItem('token', action.payload.token);
+      localStorage.setItem("user", JSON.stringify(action.payload.user));
+      localStorage.setItem("token", action.payload.token);
     },
     loginFailure: (state, action) => {
       state.isLoading = false;
@@ -49,13 +63,32 @@ const authSlice = createSlice({
     logout: (state) => {
       state.user = null;
       state.token = null;
-      localStorage.removeItem('user');
-      localStorage.removeItem('token');
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");
     },
 
     // Clear error
     clearError: (state) => {
       state.error = null;
+    },
+
+    // Initialize auth state from localStorage (called on app load)
+    initializeAuth: (state) => {
+      const user = localStorage.getItem("user");
+      const token = localStorage.getItem("token");
+
+      if (user && token) {
+        try {
+          state.user = JSON.parse(user);
+          state.token = token;
+        } catch (error) {
+          // If JSON parsing fails, clear invalid data
+          localStorage.removeItem("user");
+          localStorage.removeItem("token");
+          state.user = null;
+          state.token = null;
+        }
+      }
     },
   },
 });
@@ -69,6 +102,7 @@ export const {
   loginFailure,
   logout,
   clearError,
+  initializeAuth,
 } = authSlice.actions;
 
 export default authSlice.reducer;

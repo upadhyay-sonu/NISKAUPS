@@ -20,12 +20,20 @@ const Login = () => {
 
     try {
       const response = await api.post('/auth/login', { email, password });
-      dispatch(loginSuccess(response));
+      
+      // Extract data from response
+      const { token, user } = response.data;
+      
+      // Dispatch login success with the correct payload
+      dispatch(loginSuccess({ token, user }));
       showToast('Logged in successfully', 'success');
+      
+      // Navigate to home page or intended destination
       navigate('/');
     } catch (error) {
-      dispatch(loginFailure(error.message || 'Login failed'));
-      showToast('Login failed', 'error');
+      const errorMessage = error.response?.data?.message || error.message || 'Login failed';
+      dispatch(loginFailure(errorMessage));
+      showToast(errorMessage, 'error');
     }
 
     setLoading(false);

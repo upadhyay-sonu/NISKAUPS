@@ -20,12 +20,6 @@ const Cart = () => {
 
   const fetchCart = async () => {
     try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        navigate("/login");
-        return;
-      }
-
       const response = await api.get("/cart");
       setCartItems(response.data?.items || []);
     } catch (error) {

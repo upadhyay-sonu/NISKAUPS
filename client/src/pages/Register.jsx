@@ -37,12 +37,18 @@ const Register = () => {
 
     try {
       const response = await api.post('/auth/register', formData);
-      dispatch(registerSuccess(response));
+      
+      // Extract data from response
+      const { token, user } = response.data;
+      
+      // Dispatch register success with the correct payload
+      dispatch(registerSuccess({ token, user }));
       showToast('Registered successfully', 'success');
       navigate('/');
     } catch (error) {
-      dispatch(registerFailure(error.message || 'Registration failed'));
-      showToast('Registration failed', 'error');
+      const errorMessage = error.response?.data?.message || error.message || 'Registration failed';
+      dispatch(registerFailure(errorMessage));
+      showToast(errorMessage, 'error');
     }
 
     setLoading(false);

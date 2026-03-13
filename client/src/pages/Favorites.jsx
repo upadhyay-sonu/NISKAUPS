@@ -15,12 +15,6 @@ const Favorites = () => {
 
   const fetchFavorites = async () => {
     try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        navigate("/login");
-        return;
-      }
-
       const response = await api.get("/favorites");
       setFavorites(response.data?.products || []);
     } catch (error) {

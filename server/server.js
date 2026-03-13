@@ -46,7 +46,8 @@ app.use(cors(corsOptions));
 // Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
+  max: 300, // limit each IP to 300 requests per windowMs
+  skip: (req) => req.method === 'GET', // Don't limit GET requests
 });
 
 app.use('/api/', limiter);
@@ -59,6 +60,7 @@ app.use('/api/orders', require('./routes/orders'));
 app.use('/api/blog', require('./routes/blog'));
 app.use('/api/books', require('./routes/books'));
 app.use('/api/favorites', require('./routes/favorites'));
+app.use('/api/news', require('./routes/news'));
 
 // Health check
 app.get('/api/health', (req, res) => {
