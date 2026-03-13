@@ -10,7 +10,7 @@ import {
 import api from "../config/api";
 
 const News = () => {
-  const [topNews, setTopNews] = useState([]);
+  const [headlines, setHeadlines] = useState([]);
   const [bookNews, setBookNews] = useState([]);
   const [trendingNews, setTrendingNews] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
@@ -50,28 +50,40 @@ const News = () => {
     }
 
     try {
-      const [topRes, booksRes, trendingRes] = await Promise.all([
-        api.get("/news/top"),
-        api.get("/news/books"),
-        api.get("/news/trending"),
-      ]);
+      // Fetch headlines
+      const headlinesRes = await fetch("/api/news/headlines");
+      const headlinesData = await headlinesRes.json();
+      const headlinesArticles = Array.isArray(headlinesData)
+        ? headlinesData
+        : headlinesData?.articles || [];
 
-      const topArticles = topRes.data?.articles || [];
-      const bookArticles = booksRes.data?.articles || [];
-      const trendingArticles = trendingRes.data?.articles || [];
+      // Fetch book news
+      const booksRes = await fetch("/api/news/books");
+      const booksData = await booksRes.json();
+      const bookArticles = Array.isArray(booksData)
+        ? booksData
+        : booksData?.articles || [];
 
-      // Only update if we have articles
-      if (topArticles.length > 0) setTopNews(topArticles);
-      if (bookArticles.length > 0) setBookNews(bookArticles);
-      if (trendingArticles.length > 0) setTrendingNews(trendingArticles);
+      // Fetch trending news
+      const trendingRes = await fetch("/api/news/trending");
+      const trendingData = await trendingRes.json();
+      const trendingArticles = Array.isArray(trendingData)
+        ? trendingData
+        : trendingData?.articles || [];
 
+      console.log("News fetched successfully:", {
+        headlines: headlinesArticles.length,
+        bookNews: bookArticles.length,
+        trending: trendingArticles.length,
+      });
+
+      console.log("Headlines sample:", headlinesArticles[0]);
+
+      // Update state
+      setHeadlines(headlinesArticles);
+      setBookNews(bookArticles);
+      setTrendingNews(trendingArticles);
       setLastUpdated(new Date());
-      console.log(
-        "News fetched:",
-        topArticles.length,
-        bookArticles.length,
-        trendingArticles.length,
-      );
     } catch (error) {
       console.error("Failed to fetch news:", error);
     } finally {
@@ -125,7 +137,7 @@ const News = () => {
             alt={article.title}
             className="w-full h-full object-cover group-hover:scale-110 transition duration-500"
             onError={(e) => {
-              e.target.src = "https://via.placeholder.com/400x300?text=News";
+              e.target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300'%3E%3Crect fill='%23e5e7eb' width='400' height='300'/%3E%3Ctext x='50%' y='50%' font-size='16' fill='%239ca3af' text-anchor='middle' dy='.3em'%3ENews Image%3C/text%3E%3C/svg%3E";
             }}
           />
         ) : (
@@ -196,7 +208,7 @@ const News = () => {
         <div className="container-custom">
           <motion.h1
             variants={itemVariants}
-            className="text-5xl md:text-6xl font-serif font-bold mb-4"
+            className="text-5xl md:text-6xl font-serif font-bold mb-4 text-white"
           >
             Latest News
           </motion.h1>
@@ -274,7 +286,7 @@ const News = () => {
       {/* Content */}
       <div className="container-custom py-12">
         {loading &&
-        !topNews.length &&
+        !headlines.length &&
         !bookNews.length &&
         !trendingNews.length ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -299,8 +311,8 @@ const News = () => {
                 Last updated: {lastUpdated.toLocaleTimeString()}
               </p>
             )}
-            {topNews.length > 0 ? (
-              <NewsGrid articles={topNews} />
+            {headlines && headlines.length > 0 ? (
+              <NewsGrid articles={headlines} />
             ) : (
               <div className="text-center py-12">
                 <Newspaper
@@ -308,7 +320,7 @@ const News = () => {
                   className="text-neutral-300 mx-auto mb-4"
                 />
                 <p className="text-neutral-500">
-                  Loading headlines from news sources...
+                  {loading ? "Loading headlines from news sources..." : "No headlines available"}
                 </p>
               </div>
             )}
@@ -327,13 +339,13 @@ const News = () => {
                 Last updated: {lastUpdated.toLocaleTimeString()}
               </p>
             )}
-            {bookNews.length > 0 ? (
+            {bookNews && bookNews.length > 0 ? (
               <NewsGrid articles={bookNews} />
             ) : (
               <div className="text-center py-12">
                 <BookOpen size={48} className="text-neutral-300 mx-auto mb-4" />
                 <p className="text-neutral-500">
-                  Loading book news from sources...
+                  {loading ? "Loading book news from sources..." : "No book news available"}
                 </p>
               </div>
             )}
@@ -352,7 +364,7 @@ const News = () => {
                 Last updated: {lastUpdated.toLocaleTimeString()}
               </p>
             )}
-            {trendingNews.length > 0 ? (
+            {trendingNews && trendingNews.length > 0 ? (
               <NewsGrid articles={trendingNews} />
             ) : (
               <div className="text-center py-12">
@@ -360,7 +372,9 @@ const News = () => {
                   size={48}
                   className="text-neutral-300 mx-auto mb-4"
                 />
-                <p className="text-neutral-500">Loading trending topics...</p>
+                <p className="text-neutral-500">
+                  {loading ? "Loading trending topics..." : "No trending news available"}
+                </p>
               </div>
             )}
           </>

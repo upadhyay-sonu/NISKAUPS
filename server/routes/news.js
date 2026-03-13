@@ -8,9 +8,13 @@ const {
 } = require("../controllers/newsController");
 
 // Public routes
-router.get("/top", getTopNews);
-router.get("/books", getBookNews);
-router.get("/trending", getTrendingNews);
+// Updated endpoint names as per specification
+router.get("/headlines", getTopNews); // Top Headlines
+router.get("/books", getBookNews); // Book News
+router.get("/trending", getTrendingNews); // Trending
 router.get("/search", searchNews);
+
+// Keep old endpoints for backward compatibility
+router.get("/top", getTopNews);
 
 module.exports = router;

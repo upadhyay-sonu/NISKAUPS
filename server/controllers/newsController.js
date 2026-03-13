@@ -234,36 +234,48 @@ exports.getTopNews = async (req, res) => {
       });
     }
 
-    const topicNews = "news headlines books";
-
-    const results = await Promise.allSettled([
-      fetchFromNewsAPI(topicNews),
-      fetchFromGNews(topicNews),
-      fetchFromGuardian(topicNews),
-      fetchFromNYTimes(topicNews),
-    ]);
-
-    // Extract successful results
-    const newsResults = results
-      .map((result) => (result.status === "fulfilled" ? result.value : []))
-      .filter((news) => news && news.length > 0);
-
-    if (newsResults.length === 0) {
-      console.warn("No news sources available for top news");
+    // Use NewsAPI top-headlines endpoint for Top Headlines
+    const apiKey = process.env.NEWSAPI_KEY;
+    if (!apiKey) {
+      console.error("NEWSAPI_KEY not configured");
+      const fallbackArticles = newsCache.top.data || fallbackNewsData.topNews || [];
       return res.status(200).json({
         success: true,
-        articles: newsCache.top.data || [],
+        articles: fallbackArticles,
         cached: false,
         fallback: true,
+        message: "Unable to load news right now.",
       });
     }
 
-    let articles = combineNews(newsResults).slice(0, 10);
+    const response = await axios.get(
+      "https://newsapi.org/v2/top-headlines",
+      {
+        params: {
+          language: "en",
+          pageSize: 12,
+          apiKey: apiKey,
+        },
+        timeout: 8000,
+      }
+    );
 
-    // Use fallback data if no articles found
-    if (articles.length === 0 && fallbackNewsData.topNews.length > 0) {
-      console.log("Using fallback data for top news");
-      articles = fallbackNewsData.topNews;
+    const articles = (response.data.articles || [])
+      .filter((article) => article.title && article.description)
+      .map((article) => ({
+        title: article.title,
+        description: article.description || "No description available",
+        image: article.urlToImage,
+        source: article.source?.name || "News",
+        url: article.url,
+        publishedAt: article.publishedAt,
+        provider: "NewsAPI",
+      }))
+      .slice(0, 12);
+
+    console.log(`Top Headlines: Fetched ${articles.length} articles`);
+    if (articles.length > 0) {
+      console.log("First article:", JSON.stringify(articles[0], null, 2));
     }
 
     // Cache results
@@ -272,9 +284,15 @@ exports.getTopNews = async (req, res) => {
       timestamp: Date.now(),
     };
 
+    const responseArticles =
+      articles.length > 0 ? articles : fallbackNewsData.topNews || [];
+    console.log(
+      `Returning ${responseArticles.length} articles to frontend`,
+    );
+
     res.status(200).json({
       success: true,
-      articles: articles.length > 0 ? articles : newsCache.top.data || [],
+      articles: responseArticles,
       cached: false,
     });
   } catch (error) {
@@ -285,6 +303,7 @@ exports.getTopNews = async (req, res) => {
       articles: fallbackArticles,
       cached: false,
       fallback: true,
+      message: "Unable to load news right now.",
     });
   }
 };
@@ -300,37 +319,48 @@ exports.getBookNews = async (req, res) => {
       });
     }
 
-    const bookQuery = "books authors literature";
-
-    const results = await Promise.allSettled([
-      fetchFromNewsAPI(bookQuery),
-      fetchFromGNews(bookQuery),
-      fetchFromGuardian(bookQuery),
-      fetchFromNYTimes(bookQuery),
-    ]);
-
-    // Extract successful results
-    const newsResults = results
-      .map((result) => (result.status === "fulfilled" ? result.value : []))
-      .filter((news) => news && news.length > 0);
-
-    if (newsResults.length === 0) {
-      console.warn("No news sources available for book news");
+    // Use NewsAPI everything endpoint for Book News
+    const apiKey = process.env.NEWSAPI_KEY;
+    if (!apiKey) {
+      console.error("NEWSAPI_KEY not configured");
+      const fallbackArticles = newsCache.books.data || fallbackNewsData.bookNews || [];
       return res.status(200).json({
         success: true,
-        articles: newsCache.books.data || [],
+        articles: fallbackArticles,
         cached: false,
         fallback: true,
+        message: "Unable to load news right now.",
       });
     }
 
-    let articles = combineNews(newsResults).slice(0, 12);
+    const response = await axios.get(
+      "https://newsapi.org/v2/everything",
+      {
+        params: {
+          q: "books OR literature OR publishing",
+          language: "en",
+          sortBy: "publishedAt",
+          pageSize: 12,
+          apiKey: apiKey,
+        },
+        timeout: 8000,
+      }
+    );
 
-    // Use fallback data if no articles found
-    if (articles.length === 0 && fallbackNewsData.bookNews.length > 0) {
-      console.log("Using fallback data for book news");
-      articles = fallbackNewsData.bookNews;
-    }
+    const articles = (response.data.articles || [])
+      .filter((article) => article.title && article.description)
+      .map((article) => ({
+        title: article.title,
+        description: article.description || "No description available",
+        image: article.urlToImage,
+        source: article.source?.name || "Books",
+        url: article.url,
+        publishedAt: article.publishedAt,
+        provider: "NewsAPI",
+      }))
+      .slice(0, 12);
+
+    console.log(`Book News: Fetched ${articles.length} articles`);
 
     // Cache results
     newsCache.books = {
@@ -340,7 +370,7 @@ exports.getBookNews = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      articles: articles.length > 0 ? articles : newsCache.books.data || [],
+      articles: articles.length > 0 ? articles : fallbackNewsData.bookNews || [],
       cached: false,
     });
   } catch (error) {
@@ -351,6 +381,7 @@ exports.getBookNews = async (req, res) => {
       articles: fallbackArticles,
       cached: false,
       fallback: true,
+      message: "Unable to load news right now.",
     });
   }
 };
@@ -366,54 +397,57 @@ exports.getTrendingNews = async (req, res) => {
       });
     }
 
-    const trendingQueries = [
-      "bestsellers",
-      "publishing industry",
-      "book awards",
-      "author interviews",
-    ];
+    // Use NewsAPI top-headlines for Trending (general category)
+    const apiKey = process.env.NEWSAPI_KEY;
+    if (!apiKey) {
+      console.error("NEWSAPI_KEY not configured");
+      const fallbackArticles = newsCache.trending.data || fallbackNewsData.trendingNews || [];
+      return res.status(200).json({
+        success: true,
+        articles: fallbackArticles,
+        cached: false,
+        fallback: true,
+        message: "Unable to load news right now.",
+      });
+    }
 
-    const newsResults = await Promise.all(
-      trendingQueries.map(async (query) => {
-        const results = await Promise.allSettled([
-          fetchFromNewsAPI(query),
-          fetchFromGNews(query),
-          fetchFromGuardian(query),
-          fetchFromNYTimes(query),
-        ]);
-
-        const successfulResults = results
-          .map((result) => (result.status === "fulfilled" ? result.value : []))
-          .filter((news) => news && news.length > 0);
-
-        return successfulResults.length > 0
-          ? combineNews(successfulResults).slice(0, 3)
-          : [];
-      })
+    const response = await axios.get(
+      "https://newsapi.org/v2/top-headlines",
+      {
+        params: {
+          category: "general",
+          language: "en",
+          pageSize: 12,
+          apiKey: apiKey,
+        },
+        timeout: 8000,
+      }
     );
 
-    let combinedArticles = combineNews(newsResults.filter((arr) => arr.length > 0))
-      .sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt))
-      .slice(0, 8);
+    const articles = (response.data.articles || [])
+      .filter((article) => article.title && article.description)
+      .map((article) => ({
+        title: article.title,
+        description: article.description || "No description available",
+        image: article.urlToImage,
+        source: article.source?.name || "Trending",
+        url: article.url,
+        publishedAt: article.publishedAt,
+        provider: "NewsAPI",
+      }))
+      .slice(0, 12);
 
-    // Use fallback data if no articles found
-    if (combinedArticles.length === 0 && fallbackNewsData.trendingNews.length > 0) {
-      console.log("Using fallback data for trending news");
-      combinedArticles = fallbackNewsData.trendingNews;
-    }
+    console.log(`Trending News: Fetched ${articles.length} articles`);
 
     // Cache results
     newsCache.trending = {
-      data: combinedArticles,
+      data: articles,
       timestamp: Date.now(),
     };
 
     res.status(200).json({
       success: true,
-      articles:
-        combinedArticles.length > 0
-          ? combinedArticles
-          : newsCache.trending.data || [],
+      articles: articles.length > 0 ? articles : fallbackNewsData.trendingNews || [],
       cached: false,
     });
   } catch (error) {
@@ -424,6 +458,7 @@ exports.getTrendingNews = async (req, res) => {
       articles: fallbackArticles,
       cached: false,
       fallback: true,
+      message: "Unable to load news right now.",
     });
   }
 };

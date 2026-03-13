@@ -1,0 +1,184 @@
+================================================================================
+              NEWSAPI.ORG INTEGRATION - SETUP INSTRUCTIONS
+================================================================================
+
+API KEY PROVIDED: 1c9e6e085def4611959f88ac2a6f1a29
+
+STEP 1: Add API Key to Environment
+==================================
+
+Open the file: server/.env
+
+Add this line:
+NEWSAPI_KEY=1c9e6e085def4611959f88ac2a6f1a29
+
+Save the file.
+
+STEP 2: Verify Backend Routes
+==============================
+
+The following routes are now available:
+
+GET /api/news/headlines   => Top Headlines from NewsAPI
+GET /api/news/books       => Book News (books OR literature OR publishing)
+GET /api/news/trending    => Trending News (general category)
+
+All routes fetch from: https://newsapi.org/v2/
+
+STEP 3: Start the Application
+==============================
+
+Terminal 1 - Backend:
+  cd server
+  npm install (if needed)
+  npm run dev
+
+Terminal 2 - Frontend:
+  cd client
+  npm install (if needed)
+  npm run dev
+
+Terminal 3 - Browser:
+  Open http://localhost:5173
+  Navigate to News section
+
+STEP 4: What You Should See
+==============================
+
+1. Top Headlines
+   - 12 latest news articles
+   - Updates daily from NewsAPI
+   - Shows images, titles, descriptions, sources, dates
+
+2. Book News
+   - Articles about books, literature, publishing
+   - 12 articles sorted by publication date
+   - Uses NewsAPI everything endpoint
+
+3. Trending
+   - General trending topics
+   - 12 articles from NewsAPI top-headlines
+   - General news category
+
+STEP 5: Each Article Card Shows
+===============================
+
+✓ News image (with placeholder if missing)
+✓ Article title (up to 2 lines)
+✓ Short description (up to 2 lines)
+✓ Source name
+✓ Publication date
+✓ Read More button (links to full article)
+✓ Provider badge (NewsAPI)
+
+STEP 6: Error Handling
+=======================
+
+If API fails:
+- Shows message: "Unable to load news right now."
+- Falls back to cached articles from previous fetch
+- Falls back to demo articles if cache is empty
+- Never shows completely empty state
+
+STEP 7: Auto-Refresh
+====================
+
+News automatically refreshes every 10 minutes
+Last updated timestamp shows when data was fetched
+No need to manually refresh
+
+TROUBLESHOOTING
+===============
+
+Issue: No articles showing
+Fix: Check .env file has NEWSAPI_KEY=1c9e6e085def4611959f88ac2a6f1a29
+
+Issue: "Unable to load news" message
+Fix: Verify API key is correct in .env
+     Wait a few seconds and refresh the page
+     Check internet connection
+
+Issue: Images not loading
+Fix: This is normal - all images have a placeholder fallback
+     Placeholder shows gray background with newspaper icon
+
+TESTING ENDPOINTS
+=================
+
+To test the backend directly:
+
+1. Make sure server is running (npm run dev)
+
+2. Test Top Headlines:
+   curl "http://localhost:5000/api/news/headlines"
+
+3. Test Book News:
+   curl "http://localhost:5000/api/news/books"
+
+4. Test Trending:
+   curl "http://localhost:5000/api/news/trending"
+
+Each should return JSON with articles array containing 12 articles.
+
+FILES MODIFIED
+==============
+
+1. server/.env
+   - Add NEWSAPI_KEY=1c9e6e085def4611959f88ac2a6f1a29
+
+2. server/controllers/newsController.js
+   - getTopNews() uses /v2/top-headlines
+   - getBookNews() uses /v2/everything with books query
+   - getTrendingNews() uses /v2/top-headlines with general category
+   - Error messages: "Unable to load news right now."
+
+3. server/routes/news.js
+   - Route /headlines for Top Headlines
+   - Route /books for Book News
+   - Route /trending for Trending News
+
+4. client/src/pages/News.jsx
+   - Calls /api/news/headlines for top news
+   - Calls /api/news/books for book news
+   - Calls /api/news/trending for trending news
+
+NEWSAPI ENDPOINTS USED
+======================
+
+1. Top Headlines:
+   GET https://newsapi.org/v2/top-headlines
+   Params: language=en, pageSize=12, apiKey=YOUR_KEY
+
+2. Book News:
+   GET https://newsapi.org/v2/everything
+   Params: q=books OR literature OR publishing
+           language=en, sortBy=publishedAt, pageSize=12
+           apiKey=YOUR_KEY
+
+3. Trending:
+   GET https://newsapi.org/v2/top-headlines
+   Params: category=general, language=en, pageSize=12
+           apiKey=YOUR_KEY
+
+QUICK START
+===========
+
+1. Edit server/.env and add:
+   NEWSAPI_KEY=1c9e6e085def4611959f88ac2a6f1a29
+
+2. Start backend:
+   cd server
+   npm run dev
+
+3. Start frontend (new terminal):
+   cd client
+   npm run dev
+
+4. Open browser:
+   http://localhost:5173/news
+
+5. See live articles from NewsAPI.org in three sections
+
+That's it! News section is now fully integrated with NewsAPI.org
+
+================================================================================
