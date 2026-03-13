@@ -23,6 +23,38 @@ const News = () => {
   const trendingSliderRef = useRef(null);
   const refreshIntervalRef = useRef(null);
 
+  // Filter articles to remove invalid/parked URLs and incomplete data
+  const cleanArticles = (articles) => {
+    if (!Array.isArray(articles)) return [];
+
+    return articles.filter((article) => {
+      // Must have URL
+      if (!article.url || typeof article.url !== "string") return false;
+
+      // Must have title
+      if (!article.title || typeof article.title !== "string") return false;
+
+      // Must have description
+      if (!article.description || typeof article.description !== "string")
+        return false;
+
+      // Filter out GoDaddy parked domains
+      const urlLower = article.url.toLowerCase();
+      if (urlLower.includes("godaddy") || urlLower.includes("forsale")) {
+        console.warn("Filtered out parked domain:", article.url);
+        return false;
+      }
+
+      // Filter out invalid URLs (must start with http)
+      if (!article.url.startsWith("http")) return false;
+
+      // Optional: require image for better presentation
+      // if (!article.image && !article.urlToImage) return false;
+
+      return true;
+    });
+  };
+
   useEffect(() => {
     fetchAllNews();
 
@@ -52,6 +84,8 @@ const News = () => {
     try {
       // Fetch headlines
       const headlinesRes = await fetch("/api/news/headlines");
+      if (!headlinesRes.ok)
+        throw new Error(`Headlines: ${headlinesRes.status}`);
       const headlinesData = await headlinesRes.json();
       const headlinesArticles = Array.isArray(headlinesData)
         ? headlinesData
@@ -59,6 +93,7 @@ const News = () => {
 
       // Fetch book news
       const booksRes = await fetch("/api/news/books");
+      if (!booksRes.ok) throw new Error(`Books: ${booksRes.status}`);
       const booksData = await booksRes.json();
       const bookArticles = Array.isArray(booksData)
         ? booksData
@@ -66,6 +101,7 @@ const News = () => {
 
       // Fetch trending news
       const trendingRes = await fetch("/api/news/trending");
+      if (!trendingRes.ok) throw new Error(`Trending: ${trendingRes.status}`);
       const trendingData = await trendingRes.json();
       const trendingArticles = Array.isArray(trendingData)
         ? trendingData
@@ -77,12 +113,30 @@ const News = () => {
         trending: trendingArticles.length,
       });
 
-      console.log("Headlines sample:", headlinesArticles[0]);
+      console.log("Headlines raw response:", headlinesData);
+      console.log("Headlines articles:", headlinesArticles);
+      if (headlinesArticles.length > 0) {
+        console.log(
+          "First headline:",
+          JSON.stringify(headlinesArticles[0], null, 2),
+        );
+      }
 
-      // Update state
-      setHeadlines(headlinesArticles);
-      setBookNews(bookArticles);
-      setTrendingNews(trendingArticles);
+      // Update state with cleaned articles
+      const cleanedHeadlines = cleanArticles(headlinesArticles).slice(0, 12);
+      const cleanedBooks = cleanArticles(bookArticles).slice(0, 12);
+      const cleanedTrending = cleanArticles(trendingArticles).slice(0, 12);
+
+      setHeadlines(cleanedHeadlines);
+      setBookNews(cleanedBooks);
+      setTrendingNews(cleanedTrending);
+
+      console.log("Cleaned articles:", {
+        headlines: cleanedHeadlines.length,
+        books: cleanedBooks.length,
+        trending: cleanedTrending.length,
+      });
+
       setLastUpdated(new Date());
     } catch (error) {
       console.error("Failed to fetch news:", error);
@@ -122,54 +176,67 @@ const News = () => {
     }
   };
 
-  const NewsCard = ({ article }) => (
-    <motion.a
-      href={article.url}
-      target="_blank"
-      rel="noopener noreferrer"
-      whileHover={{ y: -8 }}
-      className="card-glass overflow-hidden cursor-pointer block group"
-    >
-      <div className="w-full h-48 bg-neutral-100 overflow-hidden relative">
-        {article.image ? (
-          <img
-            src={article.image}
-            alt={article.title}
-            className="w-full h-full object-cover group-hover:scale-110 transition duration-500"
-            onError={(e) => {
-              e.target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300'%3E%3Crect fill='%23e5e7eb' width='400' height='300'/%3E%3Ctext x='50%' y='50%' font-size='16' fill='%239ca3af' text-anchor='middle' dy='.3em'%3ENews Image%3C/text%3E%3C/svg%3E";
-            }}
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-neutral-200 to-neutral-300">
-            <Newspaper size={48} className="text-neutral-400" />
-          </div>
-        )}
-        <span className="absolute top-3 right-3 bg-primary text-white text-xs px-3 py-1 rounded-full">
-          {article.provider}
-        </span>
-      </div>
-      <div className="p-4">
-        <p className="text-xs text-neutral-500 mb-2">
-          {article.source} •{" "}
-          {new Date(article.publishedAt).toLocaleDateString()}
-        </p>
-        <h3 className="font-serif font-bold text-lg mb-2 line-clamp-2 group-hover:text-primary transition">
-          {article.title}
-        </h3>
-        <p className="text-sm text-neutral-600 mb-3 line-clamp-2">
-          {article.description}
-        </p>
-        <div className="flex items-center gap-2 text-primary font-semibold text-sm">
-          Read More
-          <ArrowRight
-            size={14}
-            className="group-hover:translate-x-1 transition"
-          />
+  const NewsCard = ({ article }) => {
+    // Double-check URL safety before rendering
+    if (!article.url || !article.url.startsWith("http")) {
+      return null;
+    }
+
+    const urlLower = article.url.toLowerCase();
+    if (urlLower.includes("godaddy") || urlLower.includes("forsale")) {
+      return null;
+    }
+
+    return (
+      <motion.a
+        href={article.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        whileHover={{ y: -8 }}
+        className="card-glass overflow-hidden cursor-pointer block group"
+      >
+        <div className="w-full h-48 bg-neutral-100 overflow-hidden relative">
+          {article.image ? (
+            <img
+              src={article.image}
+              alt={article.title}
+              className="w-full h-full object-cover group-hover:scale-110 transition duration-500"
+              onError={(e) => {
+                e.target.src =
+                  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300'%3E%3Crect fill='%23e5e7eb' width='400' height='300'/%3E%3Ctext x='50%' y='50%' font-size='16' fill='%239ca3af' text-anchor='middle' dy='.3em'%3ENews Image%3C/text%3E%3C/svg%3E";
+              }}
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-neutral-200 to-neutral-300">
+              <Newspaper size={48} className="text-neutral-400" />
+            </div>
+          )}
+          <span className="absolute top-3 right-3 bg-primary text-white text-xs px-3 py-1 rounded-full">
+            {article.provider}
+          </span>
         </div>
-      </div>
-    </motion.a>
-  );
+        <div className="p-4">
+          <p className="text-xs text-neutral-500 mb-2">
+            {article.source} •{" "}
+            {new Date(article.publishedAt).toLocaleDateString()}
+          </p>
+          <h3 className="font-serif font-bold text-lg mb-2 line-clamp-2 group-hover:text-primary transition">
+            {article.title}
+          </h3>
+          <p className="text-sm text-neutral-600 mb-3 line-clamp-2">
+            {article.description}
+          </p>
+          <div className="flex items-center gap-2 text-primary font-semibold text-sm">
+            Read More
+            <ArrowRight
+              size={14}
+              className="group-hover:translate-x-1 transition"
+            />
+          </div>
+        </div>
+      </motion.a>
+    );
+  };
 
   const NewsGrid = ({ articles }) => (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -320,7 +387,9 @@ const News = () => {
                   className="text-neutral-300 mx-auto mb-4"
                 />
                 <p className="text-neutral-500">
-                  {loading ? "Loading headlines from news sources..." : "No headlines available"}
+                  {loading
+                    ? "Loading headlines from news sources..."
+                    : "No headlines available"}
                 </p>
               </div>
             )}
@@ -345,7 +414,9 @@ const News = () => {
               <div className="text-center py-12">
                 <BookOpen size={48} className="text-neutral-300 mx-auto mb-4" />
                 <p className="text-neutral-500">
-                  {loading ? "Loading book news from sources..." : "No book news available"}
+                  {loading
+                    ? "Loading book news from sources..."
+                    : "No book news available"}
                 </p>
               </div>
             )}
@@ -373,7 +444,9 @@ const News = () => {
                   className="text-neutral-300 mx-auto mb-4"
                 />
                 <p className="text-neutral-500">
-                  {loading ? "Loading trending topics..." : "No trending news available"}
+                  {loading
+                    ? "Loading trending topics..."
+                    : "No trending news available"}
                 </p>
               </div>
             )}

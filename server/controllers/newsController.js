@@ -227,11 +227,7 @@ exports.getTopNews = async (req, res) => {
   try {
     // Check cache
     if (isCacheValid(newsCache.top)) {
-      return res.status(200).json({
-        success: true,
-        articles: newsCache.top.data,
-        cached: true,
-      });
+      return res.status(200).json(newsCache.top.data);
     }
 
     // Use NewsAPI top-headlines endpoint for Top Headlines
@@ -239,13 +235,7 @@ exports.getTopNews = async (req, res) => {
     if (!apiKey) {
       console.error("NEWSAPI_KEY not configured");
       const fallbackArticles = newsCache.top.data || fallbackNewsData.topNews || [];
-      return res.status(200).json({
-        success: true,
-        articles: fallbackArticles,
-        cached: false,
-        fallback: true,
-        message: "Unable to load news right now.",
-      });
+      return res.status(200).json(fallbackArticles);
     }
 
     const response = await axios.get(
@@ -290,21 +280,11 @@ exports.getTopNews = async (req, res) => {
       `Returning ${responseArticles.length} articles to frontend`,
     );
 
-    res.status(200).json({
-      success: true,
-      articles: responseArticles,
-      cached: false,
-    });
+    res.status(200).json(responseArticles);
   } catch (error) {
     console.error("Error fetching top news:", error.message);
     const fallbackArticles = newsCache.top.data || fallbackNewsData.topNews || [];
-    res.status(200).json({
-      success: true,
-      articles: fallbackArticles,
-      cached: false,
-      fallback: true,
-      message: "Unable to load news right now.",
-    });
+    res.status(200).json(fallbackArticles);
   }
 };
 
@@ -312,11 +292,7 @@ exports.getBookNews = async (req, res) => {
   try {
     // Check cache
     if (isCacheValid(newsCache.books)) {
-      return res.status(200).json({
-        success: true,
-        articles: newsCache.books.data,
-        cached: true,
-      });
+      return res.status(200).json(newsCache.books.data);
     }
 
     // Use NewsAPI everything endpoint for Book News
@@ -324,13 +300,7 @@ exports.getBookNews = async (req, res) => {
     if (!apiKey) {
       console.error("NEWSAPI_KEY not configured");
       const fallbackArticles = newsCache.books.data || fallbackNewsData.bookNews || [];
-      return res.status(200).json({
-        success: true,
-        articles: fallbackArticles,
-        cached: false,
-        fallback: true,
-        message: "Unable to load news right now.",
-      });
+      return res.status(200).json(fallbackArticles);
     }
 
     const response = await axios.get(
@@ -368,21 +338,11 @@ exports.getBookNews = async (req, res) => {
       timestamp: Date.now(),
     };
 
-    res.status(200).json({
-      success: true,
-      articles: articles.length > 0 ? articles : fallbackNewsData.bookNews || [],
-      cached: false,
-    });
+    res.status(200).json(articles.length > 0 ? articles : fallbackNewsData.bookNews || []);
   } catch (error) {
     console.error("Error fetching book news:", error.message);
     const fallbackArticles = newsCache.books.data || fallbackNewsData.bookNews || [];
-    res.status(200).json({
-      success: true,
-      articles: fallbackArticles,
-      cached: false,
-      fallback: true,
-      message: "Unable to load news right now.",
-    });
+    res.status(200).json(fallbackArticles);
   }
 };
 
@@ -390,11 +350,7 @@ exports.getTrendingNews = async (req, res) => {
   try {
     // Check cache
     if (isCacheValid(newsCache.trending)) {
-      return res.status(200).json({
-        success: true,
-        articles: newsCache.trending.data,
-        cached: true,
-      });
+      return res.status(200).json(newsCache.trending.data);
     }
 
     // Use NewsAPI top-headlines for Trending (general category)
@@ -402,13 +358,7 @@ exports.getTrendingNews = async (req, res) => {
     if (!apiKey) {
       console.error("NEWSAPI_KEY not configured");
       const fallbackArticles = newsCache.trending.data || fallbackNewsData.trendingNews || [];
-      return res.status(200).json({
-        success: true,
-        articles: fallbackArticles,
-        cached: false,
-        fallback: true,
-        message: "Unable to load news right now.",
-      });
+      return res.status(200).json(fallbackArticles);
     }
 
     const response = await axios.get(
@@ -445,21 +395,11 @@ exports.getTrendingNews = async (req, res) => {
       timestamp: Date.now(),
     };
 
-    res.status(200).json({
-      success: true,
-      articles: articles.length > 0 ? articles : fallbackNewsData.trendingNews || [],
-      cached: false,
-    });
+    res.status(200).json(articles.length > 0 ? articles : fallbackNewsData.trendingNews || []);
   } catch (error) {
     console.error("Error fetching trending news:", error.message);
     const fallbackArticles = newsCache.trending.data || fallbackNewsData.trendingNews || [];
-    res.status(200).json({
-      success: true,
-      articles: fallbackArticles,
-      cached: false,
-      fallback: true,
-      message: "Unable to load news right now.",
-    });
+    res.status(200).json(fallbackArticles);
   }
 };
 
@@ -488,19 +428,9 @@ exports.searchNews = async (req, res) => {
 
     const articles = combineNews(newsResults).slice(0, 15);
 
-    res.status(200).json({
-      success: true,
-      articles,
-      query,
-      count: articles.length,
-    });
+    res.status(200).json(articles);
   } catch (error) {
     console.error("Error searching news:", error.message);
-    res.status(200).json({
-      success: true,
-      articles: [],
-      query,
-      count: 0,
-    });
+    res.status(200).json([]);
   }
 };
