@@ -23,10 +23,24 @@ connectDB();
 const app = express();
 
 // CORS - Apply FIRST, before all other middleware and routes
-// Temporarily allow all origins for debugging
-app.use(cors());
+app.use(cors({
+  origin: [
+    'http://localhost:5173',
+    'http://localhost:3000',
+    'http://127.0.0.1:5173',
+    'http://127.0.0.1:3000',
+    'https://niskaups.vercel.app',
+  ],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  optionsSuccessStatus: 200,
+  maxAge: 3600,
+}));
 
-console.log('✅ CORS enabled - all origins allowed (temporary for debugging)');
+console.log('✅ CORS enabled for:');
+console.log('   - Local development (localhost:5173, localhost:3000)');
+console.log('   - Production (https://niskaups.vercel.app)');
 
 // Middleware
 app.use(helmet()); // Security headers
