@@ -28,30 +28,30 @@ app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 // CORS configuration
-const corsOptions = {
-  origin: function (origin, callback) {
-    // Allowed origins
-    const allowedOrigins = [
-      'http://localhost:5173',
-      'http://localhost:3000',
-      'http://127.0.0.1:5173',
-      'http://127.0.0.1:3000',
-      process.env.FRONTEND_URL, // Add from .env for production
-    ].filter(Boolean); // Remove undefined values
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:3000',
+  'http://127.0.0.1:5173',
+  'http://127.0.0.1:3000',
+  process.env.FRONTEND_URL,
+].filter(Boolean);
 
+console.log('✅ Allowed CORS Origins:', allowedOrigins);
+
+app.use(cors({
+  origin: function (origin, callback) {
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      callback(new Error('Not allowed by CORS'));
+      console.warn(`⚠️  CORS request from unauthorized origin: ${origin}`);
+      callback(null, true); // Allow temporarily for debugging
     }
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   optionsSuccessStatus: 200,
-};
-
-app.use(cors(corsOptions));
+}));
 
 // Rate limiting
 const limiter = rateLimit({

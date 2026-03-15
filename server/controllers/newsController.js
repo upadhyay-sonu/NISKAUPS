@@ -39,7 +39,7 @@ const newsKeywords = [
 // Fetch from NewsAPI
 const fetchFromNewsAPI = async (query) => {
   try {
-    const apiKey = process.env.NEWSAPI_KEY;
+    const apiKey = process.env.NEWS_API_KEY;
     if (!apiKey) {
       console.warn("NewsAPI key not configured");
       return [];
@@ -231,9 +231,9 @@ exports.getTopNews = async (req, res) => {
     }
 
     // Use NewsAPI top-headlines endpoint for Top Headlines
-    const apiKey = process.env.NEWSAPI_KEY;
+    const apiKey = process.env.NEWS_API_KEY;
     if (!apiKey) {
-      console.error("NEWSAPI_KEY not configured");
+      console.error("NEWS_API_KEY not configured");
       const fallbackArticles = newsCache.top.data || fallbackNewsData.topNews || [];
       return res.status(200).json(fallbackArticles);
     }
@@ -296,9 +296,9 @@ exports.getBookNews = async (req, res) => {
     }
 
     // Use NewsAPI everything endpoint for Book News
-    const apiKey = process.env.NEWSAPI_KEY;
+    const apiKey = process.env.NEWS_API_KEY;
     if (!apiKey) {
-      console.error("NEWSAPI_KEY not configured");
+      console.error("NEWS_API_KEY not configured");
       const fallbackArticles = newsCache.books.data || fallbackNewsData.bookNews || [];
       return res.status(200).json(fallbackArticles);
     }
@@ -354,9 +354,9 @@ exports.getTrendingNews = async (req, res) => {
     }
 
     // Use NewsAPI top-headlines for Trending (general category)
-    const apiKey = process.env.NEWSAPI_KEY;
+    const apiKey = process.env.NEWS_API_KEY;
     if (!apiKey) {
-      console.error("NEWSAPI_KEY not configured");
+      console.error("NEWS_API_KEY not configured");
       const fallbackArticles = newsCache.trending.data || fallbackNewsData.trendingNews || [];
       return res.status(200).json(fallbackArticles);
     }
