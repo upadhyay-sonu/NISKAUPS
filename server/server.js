@@ -77,6 +77,14 @@ app.get('/api/health', (req, res) => {
   res.status(200).json({ success: true, message: 'Server is running' });
 });
 
+// Root route
+app.get('/', (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'NISKAUPS API is running successfully',
+  });
+});
+
 // 404 handler
 app.use((req, res) => {
   res.status(404).json({
