@@ -22,37 +22,28 @@ connectDB();
 
 const app = express();
 
-// Middleware
-app.use(helmet()); // Security headers
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ limit: '50mb', extended: true }));
-
-// CORS configuration
-const allowedOrigins = [
-  'http://localhost:5173',
-  'http://localhost:3000',
-  'http://127.0.0.1:5173',
-  'http://127.0.0.1:3000',
-  'https://niskaups.vercel.app',
-  process.env.FRONTEND_URL,
-].filter(Boolean);
-
-console.log('✅ Allowed CORS Origins:', allowedOrigins);
-
+// CORS - Apply BEFORE other middleware
 app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      console.warn(`⚠️  CORS request from unauthorized origin: ${origin}`);
-      callback(null, true); // Allow temporarily for debugging
-    }
-  },
+  origin: [
+    'http://localhost:5173',
+    'http://localhost:3000',
+    'http://127.0.0.1:5173',
+    'http://127.0.0.1:3000',
+    'https://niskaups.vercel.app',
+    process.env.FRONTEND_URL,
+  ].filter(Boolean),
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   optionsSuccessStatus: 200,
 }));
+
+console.log('✅ CORS enabled for Vercel frontend: https://niskaups.vercel.app');
+
+// Middleware
+app.use(helmet()); // Security headers
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 // Rate limiting
 const limiter = rateLimit({
