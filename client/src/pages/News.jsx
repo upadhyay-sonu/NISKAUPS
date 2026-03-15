@@ -83,26 +83,22 @@ const News = () => {
 
     try {
       // Fetch headlines
-      const headlinesRes = await fetch("/api/news/headlines");
-      if (!headlinesRes.ok)
-        throw new Error(`Headlines: ${headlinesRes.status}`);
-      const headlinesData = await headlinesRes.json();
+      const headlinesRes = await api.get("/news/headlines");
+      const headlinesData = headlinesRes.data;
       const headlinesArticles = Array.isArray(headlinesData)
         ? headlinesData
         : headlinesData?.articles || [];
 
       // Fetch book news
-      const booksRes = await fetch("/api/news/books");
-      if (!booksRes.ok) throw new Error(`Books: ${booksRes.status}`);
-      const booksData = await booksRes.json();
+      const booksRes = await api.get("/news/books");
+      const booksData = booksRes.data;
       const bookArticles = Array.isArray(booksData)
         ? booksData
         : booksData?.articles || [];
 
       // Fetch trending news
-      const trendingRes = await fetch("/api/news/trending");
-      if (!trendingRes.ok) throw new Error(`Trending: ${trendingRes.status}`);
-      const trendingData = await trendingRes.json();
+      const trendingRes = await api.get("/news/trending");
+      const trendingData = trendingRes.data;
       const trendingArticles = Array.isArray(trendingData)
         ? trendingData
         : trendingData?.articles || [];

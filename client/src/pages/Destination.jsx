@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { ExternalLink, AlertCircle } from "lucide-react";
-import axios from "axios";
+import api from "../config/api";
 
 const Destination = () => {
   const [books, setBooks] = useState([]);
@@ -16,9 +16,9 @@ const Destination = () => {
         setLoading(true);
         setError(null);
 
-        console.log("Starting fetch from http://localhost:5000/api/books");
+        console.log("Fetching books from API...");
 
-        const response = await axios.get("http://localhost:5000/api/books", {
+        const response = await api.get("/books", {
           signal: controller.signal,
           timeout: 10000,
         });
@@ -53,7 +53,7 @@ const Destination = () => {
 
           if (err.code === "ECONNREFUSED" || err.message.includes("Network")) {
             setError(
-              "Cannot connect to backend. Ensure server is running on http://localhost:5000",
+              "Cannot connect to backend. Please check the backend server status.",
             );
           } else if (err.response?.status === 500) {
             setError(
