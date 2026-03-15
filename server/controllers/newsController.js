@@ -13,6 +13,12 @@ try {
   console.warn("⚠️  Could not load fallback news data:", error.message);
 }
 
+// Debug: Verify News API key is loaded
+console.log("🔍 NEWS_API_KEY loaded:", process.env.NEWS_API_KEY ? "✅ YES" : "❌ NO");
+if (process.env.NEWS_API_KEY) {
+  console.log("🔍 News API Key (first 10 chars):", process.env.NEWS_API_KEY.substring(0, 10) + "***");
+}
+
 // Cache storage
 const newsCache = {
   top: { data: null, timestamp: null },
@@ -227,16 +233,21 @@ exports.getTopNews = async (req, res) => {
   try {
     // Check cache
     if (isCacheValid(newsCache.top)) {
+      console.log("📰 Top Headlines: Returning cached data");
       return res.status(200).json(newsCache.top.data);
     }
 
     // Use NewsAPI top-headlines endpoint for Top Headlines
     const apiKey = process.env.NEWS_API_KEY;
+    console.log("🔍 getTopNews - NEWS_API_KEY available:", apiKey ? "✅ YES" : "❌ NO");
+    
     if (!apiKey) {
-      console.error("NEWS_API_KEY not configured");
+      console.error("❌ NEWS_API_KEY not configured - using fallback data");
       const fallbackArticles = newsCache.top.data || fallbackNewsData.topNews || [];
       return res.status(200).json(fallbackArticles);
     }
+    
+    console.log("🚀 Fetching Top Headlines from NewsAPI...");
 
     const response = await axios.get(
       "https://newsapi.org/v2/top-headlines",
@@ -292,16 +303,21 @@ exports.getBookNews = async (req, res) => {
   try {
     // Check cache
     if (isCacheValid(newsCache.books)) {
+      console.log("📚 Book News: Returning cached data");
       return res.status(200).json(newsCache.books.data);
     }
 
     // Use NewsAPI everything endpoint for Book News
     const apiKey = process.env.NEWS_API_KEY;
+    console.log("🔍 getBookNews - NEWS_API_KEY available:", apiKey ? "✅ YES" : "❌ NO");
+    
     if (!apiKey) {
-      console.error("NEWS_API_KEY not configured");
+      console.error("❌ NEWS_API_KEY not configured - using fallback data");
       const fallbackArticles = newsCache.books.data || fallbackNewsData.bookNews || [];
       return res.status(200).json(fallbackArticles);
     }
+    
+    console.log("🚀 Fetching Book News from NewsAPI...");
 
     const response = await axios.get(
       "https://newsapi.org/v2/everything",
@@ -350,16 +366,21 @@ exports.getTrendingNews = async (req, res) => {
   try {
     // Check cache
     if (isCacheValid(newsCache.trending)) {
+      console.log("📈 Trending News: Returning cached data");
       return res.status(200).json(newsCache.trending.data);
     }
 
     // Use NewsAPI top-headlines for Trending (general category)
     const apiKey = process.env.NEWS_API_KEY;
+    console.log("🔍 getTrendingNews - NEWS_API_KEY available:", apiKey ? "✅ YES" : "❌ NO");
+    
     if (!apiKey) {
-      console.error("NEWS_API_KEY not configured");
+      console.error("❌ NEWS_API_KEY not configured - using fallback data");
       const fallbackArticles = newsCache.trending.data || fallbackNewsData.trendingNews || [];
       return res.status(200).json(fallbackArticles);
     }
+    
+    console.log("🚀 Fetching Trending News from NewsAPI...");
 
     const response = await axios.get(
       "https://newsapi.org/v2/top-headlines",
