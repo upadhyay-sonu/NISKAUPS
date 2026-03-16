@@ -2,7 +2,7 @@ import axios from "axios";
 
 const API_BASE_URL =
   import.meta.env.VITE_API_URL ||
-  "https://niskaups-api.onrender.com/api"; // Render backend
+  "https://niskaups.onrender.com/api"; // Render backend
 
 console.log("API Base URL:", API_BASE_URL);
 
