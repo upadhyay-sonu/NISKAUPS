@@ -23,15 +23,30 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Response interceptor - handle 401 errors
+// Response interceptor - handle errors
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    // Handle CORS errors
+    if (!error.response) {
+      if (error.message === 'Network Error') {
+        console.error('CORS Error: Check if backend is running and accessible');
+        console.error('Backend URL:', API_BASE_URL);
+      }
+    }
+    
+    // Handle 401 Unauthorized
     if (error.response?.status === 401) {
       console.log("Unauthorized → user not logged in");
       localStorage.removeItem("token");
       localStorage.removeItem("user");
     }
+    
+    // Handle 403 Forbidden (CORS blocked)
+    if (error.response?.status === 403) {
+      console.error('CORS Error: Backend blocked this request');
+    }
+    
     return Promise.reject(error);
   }
 );
