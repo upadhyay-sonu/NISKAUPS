@@ -6,6 +6,7 @@ import { Star, Minus, Plus, AlertCircle } from 'lucide-react';
 import api from '../config/api';
 import { addToCart } from '../redux/cartSlice';
 import { showToast } from '../utils/toast';
+import { handleImageError, PLACEHOLDER_IMAGE } from '../utils/imageHandler';
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -23,14 +24,25 @@ const ProductDetail = () => {
 
   const fetchProduct = async () => {
     try {
+      console.log('Fetching product with ID:', id);
       const response = await api.get(`/products/${id}`);
-      setProduct(response.product);
+      console.log('Product response:', response.data);
+      
+      if (response.data?.product) {
+        setProduct(response.data.product);
+        console.log('Product loaded:', response.data.product.title);
+      } else {
+        console.error('Invalid response structure:', response.data);
+        showToast('Product data invalid', 'error');
+        navigate('/');
+      }
     } catch (error) {
-      console.error('Failed to fetch product:', error);
+      console.error('Failed to fetch product:', error.message);
       showToast('Product not found', 'error');
       navigate('/');
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const handleAddToCart = () => {
@@ -88,12 +100,19 @@ const ProductDetail = () => {
                 animate={{ opacity: 1 }}
                 src={product.images[selectedImage].url}
                 alt={product.title}
+                loading="lazy"
+                crossOrigin="anonymous"
+                onError={(e) => handleImageError(e, PLACEHOLDER_IMAGE)}
                 className="w-full h-full object-contain cursor-zoom-in"
               />
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-neutral-400">
-                No image available
-              </div>
+              <motion.img
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                src={PLACEHOLDER_IMAGE}
+                alt="No image available"
+                className="w-full h-full object-contain"
+              />
             )}
           </div>
 
@@ -109,7 +128,14 @@ const ProductDetail = () => {
                 }`}
               >
                 {img.url && (
-                  <img src={img.url} alt={`View ${idx}`} className="w-full h-full object-cover" />
+                  <img
+                    src={img.url}
+                    alt={`View ${idx}`}
+                    loading="lazy"
+                    crossOrigin="anonymous"
+                    onError={(e) => handleImageError(e, PLACEHOLDER_IMAGE)}
+                    className="w-full h-full object-cover"
+                  />
                 )}
               </motion.button>
             ))}

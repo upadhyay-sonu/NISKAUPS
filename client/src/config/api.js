@@ -1,64 +1,37 @@
 import axios from "axios";
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_URL ||
-  "https://niskaups.onrender.com/api"; // Render backend
+// Force production backend URL
+const API_BASE_URL = "https://niskaups.onrender.com/api";
 
 console.log("API Base URL:", API_BASE_URL);
 
 const api = axios.create({
   baseURL: API_BASE_URL,
-  withCredentials: true,
   headers: {
     "Content-Type": "application/json",
   },
-  timeout: 15000,
 });
 
-api.interceptors.request.use(
-  (config) => {
-    console.log(`API Request: ${config.method?.toUpperCase()} ${config.url}`);
+// Request interceptor - add JWT token to headers
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
 
-    const token = localStorage.getItem("token");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-
-    return config;
-  },
-  (error) => {
-    console.error("Request error:", error);
-    return Promise.reject(error);
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
   }
-);
 
+  return config;
+});
+
+// Response interceptor - handle 401 errors
 api.interceptors.response.use(
-  (response) => {
-    console.log(
-      `API Response: ${response.status} ${response.config.url}`,
-      response.data
-    );
-    return response;
-  },
+  (response) => response,
   (error) => {
-    if (
-      error.response?.status === 401 &&
-      !error.config.url.includes("/auth/verify")
-    ) {
+    if (error.response?.status === 401) {
+      console.log("Unauthorized → user not logged in");
       localStorage.removeItem("token");
       localStorage.removeItem("user");
-
-      if (window.location.pathname !== "/login") {
-        window.location.href = "/login";
-      }
     }
-
-    console.error(
-      "API Error:",
-      error.response?.status,
-      error.response?.data || error.message
-    );
-
     return Promise.reject(error);
   }
 );

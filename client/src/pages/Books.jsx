@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Heart, ShoppingCart, Zap } from "lucide-react";
 import api from "../config/api";
+import { handleImageError, PLACEHOLDER_IMAGE } from "../utils/imageHandler";
 
 const Books = () => {
     const { category } = useParams();
@@ -56,7 +57,11 @@ const Books = () => {
     const fetchFavorites = async () => {
         try {
             const token = localStorage.getItem("token");
-            if (!token) return;
+            
+            if (!token) {
+                console.log("User not logged in → skipping favorites fetch");
+                return;
+            }
 
             const response = await api.get("/favorites");
             const favIds = {};
@@ -249,12 +254,17 @@ const Books = () => {
                                                     <img
                                                         src={product.images[0].url}
                                                         alt={product.title}
+                                                        loading="lazy"
+                                                        crossOrigin="anonymous"
+                                                        onError={(e) => handleImageError(e, PLACEHOLDER_IMAGE)}
                                                         className="w-full h-full object-cover hover:scale-110 transition duration-500"
                                                     />
                                                 ) : (
-                                                    <div className="w-full h-full flex items-center justify-center text-neutral-400">
-                                                        No image
-                                                    </div>
+                                                    <img
+                                                        src={PLACEHOLDER_IMAGE}
+                                                        alt="No image available"
+                                                        className="w-full h-full object-cover"
+                                                    />
                                                 )}
 
                                                 {/* Favorite Button - Overlay */}
