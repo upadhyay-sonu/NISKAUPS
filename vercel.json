@@ -1,10 +1,12 @@
 {
   "version": 2,
-  "buildCommand": "cd server && npm install",
+  "buildCommand": "cd server && npm install && cd ../client && npm install && npm run build",
+  "outputDirectory": "client/dist",
   "env": {
     "MONGODB_URI": "@MONGODB_URI",
     "GOOGLE_API_KEY": "@GOOGLE_API_KEY",
-    "NODE_ENV": "production"
+    "NODE_ENV": "production",
+    "VITE_API_URL": "@VITE_API_URL"
   },
   "functions": {
     "api/server.js": {
@@ -14,8 +16,12 @@
   },
   "routes": [
     {
-      "src": "/(.*)",
+      "src": "/api/(.*)",
       "dest": "/api/server.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
     }
   ]
 }
