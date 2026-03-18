@@ -1,13 +1,17 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useDispatch } from "react-redux";
 import { Heart, ShoppingCart, Zap } from "lucide-react";
 import api from "../config/api";
+import { addToCart } from "../redux/cartSlice";
 import { handleImageError, PLACEHOLDER_IMAGE } from "../utils/imageHandler";
+import { showToast } from "../utils/toast";
 
 const Books = () => {
     const { category } = useParams();
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const [products, setProducts] = useState([]);
     const [favorites, setFavorites] = useState({});
     const [loading, setLoading] = useState(false);
@@ -78,19 +82,33 @@ const Books = () => {
         try {
             const token = localStorage.getItem("token");
             if (!token) {
+                showToast("Please log in to add items to cart", "error");
                 navigate("/login");
                 return;
             }
 
-            await api.post("/cart/add", {
+            // Add to backend
+            const response = await api.post("/cart/add", {
                 product: product._id,
                 quantity: 1,
             });
 
-            alert(`${product.title} added to cart!`);
+            if (response.data?.success) {
+                // Sync with Redux
+                dispatch(
+                    addToCart({
+                        id: product._id,
+                        title: product.title,
+                        price: product.salePrice || product.price,
+                        image: product.images[0]?.url,
+                        quantity: 1,
+                    })
+                );
+                showToast(`${product.title} added to cart!`, "success");
+            }
         } catch (error) {
             console.error("Failed to add to cart:", error);
-            alert("Failed to add to cart");
+            showToast("Failed to add to cart", "error");
         }
     };
 

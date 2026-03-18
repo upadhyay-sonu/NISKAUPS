@@ -45,24 +45,37 @@ const ProductDetail = () => {
     }
   };
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     if (!token) {
       showToast('Please log in to add items to cart', 'error');
       navigate('/login');
       return;
     }
 
-    dispatch(
-      addToCart({
-        id: product._id,
-        title: product.title,
-        price: product.salePrice || product.price,
-        image: product.images[0]?.url,
+    try {
+      // Add to backend
+      const response = await api.post('/cart/add', {
+        product: product._id,
         quantity,
-      })
-    );
+      });
 
-    showToast('Added to cart successfully', 'success');
+      if (response.data?.success) {
+        // Sync with Redux
+        dispatch(
+          addToCart({
+            id: product._id,
+            title: product.title,
+            price: product.salePrice || product.price,
+            image: product.images[0]?.url,
+            quantity,
+          })
+        );
+        showToast('Added to cart successfully', 'success');
+      }
+    } catch (error) {
+      console.error('Failed to add to cart:', error);
+      showToast('Failed to add to cart', 'error');
+    }
   };
 
   if (loading)
