@@ -1,0 +1,21 @@
+{
+  "version": 2,
+  "buildCommand": "cd server && npm install",
+  "env": {
+    "MONGODB_URI": "@MONGODB_URI",
+    "GOOGLE_API_KEY": "@GOOGLE_API_KEY",
+    "NODE_ENV": "production"
+  },
+  "functions": {
+    "api/server.js": {
+      "memory": 1024,
+      "maxDuration": 30
+    }
+  },
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/api/server.js"
+    }
+  ]
+}

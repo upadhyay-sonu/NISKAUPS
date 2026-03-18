@@ -23,14 +23,17 @@ connectDB();
 const app = express();
 
 // CORS - Apply FIRST, before all other middleware and routes
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:3000',
+  'http://127.0.0.1:5173',
+  'http://127.0.0.1:3000',
+  'https://niskaups.vercel.app',
+  process.env.FRONTEND_URL, // Support custom frontend URL from env
+].filter(Boolean);
+
 app.use(cors({
-  origin: [
-    'http://localhost:5173',
-    'http://localhost:3000',
-    'http://127.0.0.1:5173',
-    'http://127.0.0.1:3000',
-    'https://niskaups.vercel.app',
-  ],
+  origin: allowedOrigins,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization'],
@@ -38,9 +41,8 @@ app.use(cors({
   maxAge: 3600,
 }));
 
-console.log('✅ CORS enabled for:');
-console.log('   - Local development (localhost:5173, localhost:3000)');
-console.log('   - Production (https://niskaups.vercel.app)');
+console.log('✅ CORS enabled for origins:');
+allowedOrigins.forEach(origin => console.log(`   - ${origin}`));
 
 // Middleware
 app.use(helmet()); // Security headers
@@ -66,16 +68,42 @@ app.use('/api/books', require('./routes/books'));
 app.use('/api/favorites', require('./routes/favorites'));
 app.use('/api/news', require('./routes/news'));
 
-// Health check
-app.get('/api/health', (req, res) => {
-  res.status(200).json({ success: true, message: 'Server is running' });
-});
-
-// Root route
+// Root route - API info
 app.get('/', (req, res) => {
   res.status(200).json({
     success: true,
-    message: 'NISKAUPS API is running successfully',
+    message: 'NISKAUPS API is running 🚀',
+    version: '1.0.0',
+    endpoints: {
+      auth: '/api/auth',
+      products: '/api/products',
+      cart: '/api/cart',
+      orders: '/api/orders',
+      news: '/api/news',
+      books: '/api/books',
+      blog: '/api/blog',
+      favorites: '/api/favorites',
+      health: '/api/health',
+      test: '/api/test',
+    },
+  });
+});
+
+// Health check
+app.get('/api/health', (req, res) => {
+  res.status(200).json({ 
+    success: true, 
+    message: 'Server is running',
+    timestamp: new Date().toISOString(),
+  });
+});
+
+// Test route
+app.get('/api/test', (req, res) => {
+  res.status(200).json({ 
+    success: true, 
+    message: 'API working correctly ✅',
+    timestamp: new Date().toISOString(),
   });
 });
 
@@ -91,9 +119,31 @@ app.use((req, res) => {
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
+const NODE_ENV = process.env.NODE_ENV || 'development';
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-  console.log(`CORS enabled for production and local development`);
-  console.log(`API Base URL: http://localhost:${PORT}/api`);
+const server = app.listen(PORT, () => {
+  console.log('\n' + '='.repeat(60));
+  console.log('✅ NISKAUPS API SERVER STARTED');
+  console.log('='.repeat(60));
+  console.log(`Environment: ${NODE_ENV}`);
+  console.log(`Port: ${PORT}`);
+  console.log(`URL: http://localhost:${PORT}`);
+  console.log(`API Base: http://localhost:${PORT}/api`);
+  console.log('='.repeat(60));
+  console.log('\n📍 Available Endpoints:');
+  console.log(`   GET  /                 - API Info`);
+  console.log(`   GET  /api/health       - Health Check`);
+  console.log(`   GET  /api/test         - Test Endpoint`);
+  console.log(`   GET  /api/products     - Get All Products`);
+  console.log(`   GET  /api/products/:id - Get Single Product`);
+  console.log('\n');
+});
+
+// Handle graceful shutdown
+process.on('SIGTERM', () => {
+  console.log('SIGTERM received: closing server');
+  server.close(() => {
+    console.log('Server closed');
+    process.exit(0);
+  });
 });
