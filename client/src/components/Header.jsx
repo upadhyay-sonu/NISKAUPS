@@ -9,6 +9,8 @@ const Header = () => {
   const [scrolled, setScrolled] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
+  const [booksDropdownOpen, setBooksDropdownOpen] = useState(false);
+  const [accountDropdownOpen, setAccountDropdownOpen] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { user, token } = useSelector((state) => state.auth);
@@ -45,25 +47,47 @@ const Header = () => {
           <Link to="/" className="hover:opacity-60 transition">
             Home
           </Link>
-          <div className="relative group">
+          <div 
+            className="relative"
+            onMouseEnter={() => setBooksDropdownOpen(true)}
+            onMouseLeave={() => setBooksDropdownOpen(false)}
+          >
             <button className="flex items-center gap-2 hover:opacity-60 transition">
               Books
-              <ChevronDown size={16} />
+              <ChevronDown size={16} className={`transition-transform ${booksDropdownOpen ? 'rotate-180' : ''}`} />
             </button>
-            <div className="hidden group-hover:block absolute left-0 mt-2 w-48 bg-white border border-neutral-200 rounded-xl shadow-lg">
-              <Link to="/books/current" className="block px-4 py-2 hover:bg-neutral-50 transition-colors">
-                Current Selection
-              </Link>
-              <Link to="/books/signed" className="block px-4 py-2 hover:bg-neutral-50 transition-colors">
-                Signed Books
-              </Link>
-              <Link to="/books/special" className="block px-4 py-2 hover:bg-neutral-50 transition-colors">
-                Special Editions
-              </Link>
-              <Link to="/books/coming-soon" className="block px-4 py-2 hover:bg-neutral-50 transition-colors">
-                Coming Soon
-              </Link>
-            </div>
+            {booksDropdownOpen && (
+              <div className="absolute left-0 mt-2 w-48 bg-white border border-neutral-200 rounded-xl shadow-lg z-50">
+                <Link 
+                  to="/books/current" 
+                  className="block px-4 py-2 hover:bg-neutral-50 transition-colors"
+                  onClick={() => setBooksDropdownOpen(false)}
+                >
+                  Current Selection
+                </Link>
+                <Link 
+                  to="/books/signed" 
+                  className="block px-4 py-2 hover:bg-neutral-50 transition-colors"
+                  onClick={() => setBooksDropdownOpen(false)}
+                >
+                  Signed Books
+                </Link>
+                <Link 
+                  to="/books/special" 
+                  className="block px-4 py-2 hover:bg-neutral-50 transition-colors"
+                  onClick={() => setBooksDropdownOpen(false)}
+                >
+                  Special Editions
+                </Link>
+                <Link 
+                  to="/books/coming-soon" 
+                  className="block px-4 py-2 hover:bg-neutral-50 transition-colors"
+                  onClick={() => setBooksDropdownOpen(false)}
+                >
+                  Coming Soon
+                </Link>
+              </div>
+            )}
           </div>
           <Link to="/news" className="hover:opacity-60 transition">
             News
@@ -85,29 +109,45 @@ const Header = () => {
 
           {/* Account */}
           {token ? (
-            <div className="relative group">
-              <button className="p-2 hover:bg-neutral-100 rounded-lg transition-colors">
-                <User size={20} className="text-neutral-700" />
-              </button>
-              <div className="hidden group-hover:block absolute right-0 mt-2 w-48 bg-white border border-neutral-200 rounded-xl shadow-lg">
-                <div className="px-4 py-2 border-b border-neutral-200">
-                  <p className="text-sm font-semibold">{user?.name}</p>
-                  <p className="text-xs text-neutral-600">{user?.email}</p>
-                </div>
-                <Link to="/dashboard" className="flex items-center gap-2 px-4 py-2 hover:bg-neutral-50 transition-colors text-sm">
-                  <LayoutDashboard size={16} />
-                  Dashboard
-                </Link>
-                <button onClick={handleLogout} className="w-full flex items-center gap-2 text-left px-4 py-2 hover:bg-red-50 transition-colors text-red-600 text-sm">
-                  <LogOut size={16} />
-                  Logout
-                </button>
-              </div>
-            </div>
+           <div 
+             className="relative"
+             onMouseEnter={() => setAccountDropdownOpen(true)}
+             onMouseLeave={() => setAccountDropdownOpen(false)}
+           >
+             <button className="p-2 hover:bg-neutral-100 rounded-lg transition-colors">
+               <User size={20} className="text-neutral-700" />
+             </button>
+             {accountDropdownOpen && (
+               <div className="absolute right-0 mt-2 w-48 bg-white border border-neutral-200 rounded-xl shadow-lg z-50">
+                 <div className="px-4 py-2 border-b border-neutral-200">
+                   <p className="text-sm font-semibold">{user?.name}</p>
+                   <p className="text-xs text-neutral-600">{user?.email}</p>
+                 </div>
+                 <Link 
+                   to="/dashboard" 
+                   className="flex items-center gap-2 px-4 py-2 hover:bg-neutral-50 transition-colors text-sm"
+                   onClick={() => setAccountDropdownOpen(false)}
+                 >
+                   <LayoutDashboard size={16} />
+                   Dashboard
+                 </Link>
+                 <button 
+                   onClick={() => {
+                     handleLogout();
+                     setAccountDropdownOpen(false);
+                   }} 
+                   className="w-full flex items-center gap-2 text-left px-4 py-2 hover:bg-red-50 transition-colors text-red-600 text-sm"
+                 >
+                   <LogOut size={16} />
+                   Logout
+                 </button>
+               </div>
+             )}
+           </div>
           ) : (
-            <Link to="/login" className="p-2 hover:bg-neutral-100 rounded-lg transition-colors">
-              <User size={20} className="text-neutral-700" />
-            </Link>
+           <Link to="/login" className="p-2 hover:bg-neutral-100 rounded-lg transition-colors">
+             <User size={20} className="text-neutral-700" />
+           </Link>
           )}
 
           {/* Cart */}
