@@ -46,7 +46,7 @@ const ProductDetail = () => {
   };
 
   const handleAddToCart = async () => {
-    if (!token) {
+    if (!token || token === "undefined" || token === "null") {
       showToast('Please log in to add items to cart', 'error');
       navigate('/login');
       return;

@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const getInitialUser = () => {
   try {
     const user = localStorage.getItem("user");
-    return user && user !== "undefined" ? JSON.parse(user) : null;
+    return user && user !== "undefined" && user !== "null" ? JSON.parse(user) : null;
   } catch {
     return null;
   }
@@ -11,7 +11,7 @@ const getInitialUser = () => {
 
 const getInitialToken = () => {
   const token = localStorage.getItem("token");
-  return token && token !== "undefined" ? token : null;
+  return token && token !== "undefined" && token !== "null" ? token : null;
 };
 
 const initialState = {
@@ -77,7 +77,7 @@ const authSlice = createSlice({
       const user = localStorage.getItem("user");
       const token = localStorage.getItem("token");
 
-      if (user && token) {
+      if (user && token && user !== "undefined" && user !== "null" && token !== "undefined" && token !== "null") {
         try {
           state.user = JSON.parse(user);
           state.token = token;

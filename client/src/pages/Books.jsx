@@ -62,7 +62,7 @@ const Books = () => {
         try {
             const token = localStorage.getItem("token");
             
-            if (!token) {
+            if (!token || token === "undefined" || token === "null") {
                 console.log("User not logged in → skipping favorites fetch");
                 return;
             }
@@ -81,7 +81,7 @@ const Books = () => {
     const handleAddToCart = async (product) => {
         try {
             const token = localStorage.getItem("token");
-            if (!token) {
+            if (!token || token === "undefined" || token === "null") {
                 showToast("Please log in to add items to cart", "error");
                 navigate("/login");
                 return;
@@ -115,7 +115,7 @@ const Books = () => {
     const handleBuyNow = async (product) => {
         try {
             const token = localStorage.getItem("token");
-            if (!token) {
+            if (!token || token === "undefined" || token === "null") {
                 navigate("/login");
                 return;
             }
@@ -135,7 +135,7 @@ const Books = () => {
     const handleToggleFavorite = async (product) => {
         try {
             const token = localStorage.getItem("token");
-            if (!token) {
+            if (!token || token === "undefined" || token === "null") {
                 navigate("/login");
                 return;
             }
