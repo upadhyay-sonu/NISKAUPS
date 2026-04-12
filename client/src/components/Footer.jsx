@@ -30,21 +30,6 @@ const Footer = () => {
       className="bg-white border-t border-neutral-200 py-12 md:py-16"
     >
       <div className="container-custom">
-        {/* Newsletter Section */}
-        <motion.div variants={itemVariants} className="mb-12 pb-12 border-b border-neutral-200">
-          <h3 className="text-2xl font-serif font-bold mb-4">Subscribe to Our Newsletter</h3>
-          <p className="mb-6 text-neutral-600">
-            Get exclusive offers, new releases, and curated book recommendations.
-          </p>
-          <div className="flex gap-2 max-w-md">
-            <input
-              type="email"
-              placeholder="your@email.com"
-              className="flex-1 px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-            />
-            <button className="btn-primary">Subscribe</button>
-          </div>
-        </motion.div>
 
         {/* Main Footer Grid */}
         <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">

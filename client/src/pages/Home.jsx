@@ -74,18 +74,22 @@ const Home = () => {
         initial="hidden"
         animate="visible"
         variants={heroVariants}
-        className="relative w-full h-96 md:h-screen bg-gradient-to-br from-gray-50 to-white flex items-center justify-center overflow-hidden"
+        className="relative w-full h-96 md:h-screen bg-cover bg-center bg-no-repeat flex items-center justify-center overflow-hidden"
+        style={{
+          backgroundImage: `url('https://img.freepik.com/premium-photo/person-sitting-by-window-with-open-book-watercolor-faded-memories-sadness_1302739-24792.jpg?semt=ais_hybrid&w=740&q=80')`
+        }}
       >
-        <div className="container-custom text-center z-10">
+        <div className="absolute inset-0 bg-black/60 z-0"></div>
+        <div className="container-custom text-center z-10 text-white">
           <motion.h1
             variants={itemVariants}
-            className="text-5xl md:text-7xl font-serif font-bold mb-6"
+            className="text-5xl md:text-7xl font-serif font-bold mb-6 text-white"
           >
             Discover Literary Excellence
           </motion.h1>
           <motion.p
             variants={itemVariants}
-            className="text-lg md:text-xl opacity-70 mb-8 max-w-2xl mx-auto"
+            className="text-lg md:text-xl opacity-90 mb-8 max-w-2xl mx-auto text-gray-200"
           >
             Curated collections of extraordinary books for the discerning reader
           </motion.p>
@@ -104,7 +108,7 @@ const Home = () => {
         <motion.div
           animate={{ y: [0, -20, 0] }}
           transition={{ duration: 4, repeat: Infinity }}
-          className="absolute top-10 right-10 w-72 h-72 bg-primary opacity-5 rounded-full blur-3xl"
+          className="absolute top-10 right-10 w-72 h-72 bg-white flex opacity-10 rounded-full blur-3xl z-0"
         />
       </motion.section>
 
