@@ -1,19 +1,24 @@
+/** @type {import('tailwindcss').Config} */
 export default {
-  content: ['./src/**/*.{js,jsx}'],
+  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
       colors: {
-        primary: '#111111', // Soft black
-        accent: '#f5f5f5', // Light grey
+        // Original Store Colors
+        primary: '#111111',
+        accent: '#f5f5f5',
         'dark-text': '#333333',
+        // Landing Page Specific Colors
+        'landing-base': '#04040a',
+        'landing-primary': '#a78bfa',
+        'landing-secondary': '#38bdf8',
+        'landing-tertiary': '#f0abfc',
+        'landing-surface': 'rgba(255, 255, 255, 0.03)',
+        'landing-border': 'rgba(255, 255, 255, 0.07)'
       },
       fontFamily: {
         serif: ['Playfair Display', 'serif'],
         sans: ['Inter', 'sans-serif'],
-      },
-      spacing: {
-        'safe-top': 'env(safe-area-inset-top)',
-        'safe-bottom': 'env(safe-area-inset-bottom)',
       },
       animation: {
         'fade-up': 'fadeUp 0.6s ease-out',
@@ -33,6 +38,10 @@ export default {
           '0%, 100%': { transform: 'scale(1)' },
           '50%': { transform: 'scale(1.1)' },
         },
+      },
+      spacing: {
+        'safe-top': 'env(safe-area-inset-top)',
+        'safe-bottom': 'env(safe-area-inset-bottom)',
       },
     },
   },

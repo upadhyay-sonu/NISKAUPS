@@ -3,12 +3,68 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Premium bookstore featuring curated selection of books" />
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90' font-family='serif'>📚</text></svg>" />
-    <title>Niskaups - Premium Bookstore</title>
+    <meta name="description" content="NISKAUPS - A next-generation platform" />
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90' font-family='sans-serif'>⚡</text></svg>" />
+    <title>NISKAUPS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=JetBrains+Mono:wght@400&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
   </head>
   <body>
+    <!-- Custom Cursor -->
+    <div id="custom-cursor" class="pointer-events-none fixed top-0 left-0 w-5 h-5 bg-nisk-primary rounded-full mix-blend-difference z-[9999] transition-transform duration-150 ease-nisk-spring translate-x-[-50%] translate-y-[-50%]"></div>
+    <div id="custom-cursor-dot" class="pointer-events-none fixed top-0 left-0 w-1 h-1 bg-white rounded-full mix-blend-difference z-[10000] translate-x-[-50%] translate-y-[-50%]"></div>
+
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+
+    <!-- Global Cursor Script -->
+    <script>
+      const cursor = document.getElementById('custom-cursor');
+      const dot = document.getElementById('custom-cursor-dot');
+      let mouseX = 0, mouseY = 0;
+      let cursorX = 0, cursorY = 0;
+
+      // Disable default cursor if not touch device
+      if (window.matchMedia("(pointer: fine)").matches) {
+        document.body.style.cursor = 'none';
+        
+        window.addEventListener('mousemove', (e) => {
+          mouseX = e.clientX;
+          mouseY = e.clientY;
+          
+          dot.style.transform = `translate(${mouseX}px, ${mouseY}px) translate(-50%, -50%)`;
+        });
+
+        // Lerp for larger circle
+        const render = () => {
+          cursorX += (mouseX - cursorX) * 0.15;
+          cursorY += (mouseY - cursorY) * 0.15;
+          cursor.style.transform = `translate(${cursorX}px, ${cursorY}px) translate(-50%, -50%)`;
+          requestAnimationFrame(render);
+        };
+        requestAnimationFrame(render);
+
+        // Hover events for interactive elements
+        const setupHoverEvents = () => {
+          document.querySelectorAll('a, button, input[type="submit"], input[type="button"], input[type="text"], input[type="email"], textarea').forEach(el => {
+            el.addEventListener('mouseenter', () => {
+              cursor.style.transform = `translate(${cursorX}px, ${cursorY}px) translate(-50%, -50%) scale(2.5)`;
+              cursor.style.backgroundColor = 'white';
+            });
+            el.addEventListener('mouseleave', () => {
+              cursor.style.transform = `translate(${cursorX}px, ${cursorY}px) translate(-50%, -50%) scale(1)`;
+              cursor.style.backgroundColor = '#a78bfa';
+            });
+          });
+        };
+        
+        // Setup initial hovers, could use MutationObserver for React but this is basic
+        setTimeout(setupHoverEvents, 1000);
+      } else {
+        cursor.style.display = 'none';
+        dot.style.display = 'none';
+      }
+    </script>
   </body>
 </html>
