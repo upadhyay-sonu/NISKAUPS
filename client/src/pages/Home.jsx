@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { BookOpen, PenTool, Sparkles, ArrowRight } from "lucide-react";
 import api from "../config/api";
 
 const Home = () => {
+  const { user } = useSelector((state) => state.auth);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -289,32 +291,34 @@ const Home = () => {
       </section>
 
       {/* Newsletter */}
-      <section className="py-16 md:py-24">
-        <div className="container-custom">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="max-w-2xl mx-auto text-center"
-          >
-            <h2 className="text-4xl md:text-5xl font-serif font-bold mb-6">
-              Stay Updated
-            </h2>
-            <p className="text-lg opacity-70 mb-8">
-              Subscribe to our newsletter for exclusive releases and
-              recommendations
-            </p>
-            <div className="flex gap-2 max-w-md mx-auto">
-              <input
-                type="email"
-                placeholder="your@email.com"
-                className="flex-1 px-4 py-3 border border-gray-300 rounded-lg"
-              />
-              <button className="btn-primary">Subscribe</button>
-            </div>
-          </motion.div>
-        </div>
-      </section>
+      {!user && (
+        <section className="py-16 md:py-24">
+          <div className="container-custom">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="max-w-2xl mx-auto text-center"
+            >
+              <h2 className="text-4xl md:text-5xl font-serif font-bold mb-6">
+                Stay Updated
+              </h2>
+              <p className="text-lg opacity-70 mb-8">
+                Subscribe to our newsletter for exclusive releases and
+                recommendations
+              </p>
+              <div className="flex gap-2 max-w-md mx-auto">
+                <input
+                  type="email"
+                  placeholder="your@email.com"
+                  className="flex-1 px-4 py-3 border border-gray-300 rounded-lg"
+                />
+                <button className="btn-primary">Subscribe</button>
+              </div>
+            </motion.div>
+          </div>
+        </section>
+      )}
     </div>
   );
 };
