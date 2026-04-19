@@ -4,44 +4,45 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Original Store Colors
-        primary: '#111111',
-        accent: '#f5f5f5',
-        'dark-text': '#333333',
-        // Landing Page Specific Colors
-        'landing-base': '#04040a',
-        'landing-primary': '#a78bfa',
-        'landing-secondary': '#38bdf8',
-        'landing-tertiary': '#f0abfc',
-        'landing-surface': 'rgba(255, 255, 255, 0.03)',
-        'landing-border': 'rgba(255, 255, 255, 0.07)'
+        background: '#020202', // Vantablack inspired
+        surface: '#0a0a0a',   // Just off-black for cards
+        surfaceHover: '#111111', // Lighter hover state for cards
+        borderDark: 'rgba(255,255,255,0.08)',
+        borderHilight: 'rgba(255,255,255,0.15)',
+        primaryText: '#f5f5f7', // Apple inspired typography color
+        secondaryText: '#86868b',
+        
+        // Brand/Glow Accents
+        accentBlue: '#2997ff',
+        accentPurple: '#bf5af2',
+        accentPink: '#ff375f'
       },
       fontFamily: {
         serif: ['Playfair Display', 'serif'],
         sans: ['Inter', 'sans-serif'],
       },
       animation: {
-        'fade-up': 'fadeUp 0.6s ease-out',
+        'fade-up': 'fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards',
         'slide-down': 'slideDown 0.3s ease-out',
-        'pulse-badge': 'pulseBadge 2s infinite',
+        'glow-pulse': 'glowPulse 3s ease-in-out infinite alternate',
       },
       keyframes: {
         fadeUp: {
-          '0%': { opacity: '0', transform: 'translateY(20px)' },
+          '0%': { opacity: '0', transform: 'translateY(30px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' },
         },
         slideDown: {
           '0%': { opacity: '0', transform: 'translateY(-10px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' },
         },
-        pulseBadge: {
-          '0%, 100%': { transform: 'scale(1)' },
-          '50%': { transform: 'scale(1.1)' },
+        glowPulse: {
+          '0%': { boxShadow: '0 0 15px rgba(191, 90, 242, 0.2)' },
+          '100%': { boxShadow: '0 0 30px rgba(191, 90, 242, 0.6)' },
         },
       },
-      spacing: {
-        'safe-top': 'env(safe-area-inset-top)',
-        'safe-bottom': 'env(safe-area-inset-bottom)',
+      boxShadow: {
+        'glass': '0 4px 30px rgba(0, 0, 0, 0.1)',
+        'glow': '0 0 20px rgba(191, 90, 242, 0.5)',
       },
     },
   },
