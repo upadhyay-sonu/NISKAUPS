@@ -5,7 +5,7 @@ import { useDispatch } from "react-redux";
 import { Heart, ShoppingCart, Zap } from "lucide-react";
 import api from "../config/api";
 import { addToCart } from "../redux/cartSlice";
-import { handleImageError, PLACEHOLDER_IMAGE } from "../utils/imageHandler";
+import BookCard from "../components/BookCard";
 import { showToast } from "../utils/toast";
 
 const Books = () => {
@@ -256,109 +256,19 @@ const Books = () => {
                             initial="hidden"
                             animate="visible"
                             variants={staggerContainer}
-                            className="grid grid-cols-1 md:grid-cols-3 gap-8"
+                            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
                         >
                             {products.length > 0 ? (
                                 products.map((product) => (
-                                    <motion.div
-                                        key={product._id}
-                                        variants={itemVariants}
-                                        whileHover={{ y: -10 }}
-                                        className="bg-white border border-neutral-200 rounded-2xl overflow-hidden transition-all duration-300 flex flex-col"
-                                    >
-                                        <Link to={`/product/${product._id}`}>
-                                            <div className="w-full h-72 bg-neutral-100 overflow-hidden relative group">
-                                                {product.images?.[0]?.url ? (
-                                                    <img
-                                                        src={product.images[0].url}
-                                                        alt={product.title}
-                                                        loading="lazy"
-                                                        crossOrigin="anonymous"
-                                                        onError={(e) => handleImageError(e, PLACEHOLDER_IMAGE)}
-                                                        className="w-full h-full object-cover hover:scale-110 transition duration-500"
-                                                    />
-                                                ) : (
-                                                    <img
-                                                        src={PLACEHOLDER_IMAGE}
-                                                        alt="No image available"
-                                                        className="w-full h-full object-cover"
-                                                    />
-                                                )}
-
-                                                {/* Favorite Button - Overlay */}
-                                                <button
-                                                    onClick={(e) => {
-                                                        e.preventDefault();
-                                                        handleToggleFavorite(product);
-                                                    }}
-                                                    className="absolute top-4 right-4 p-2 bg-white rounded-full shadow-md hover:shadow-lg transition-all"
-                                                >
-                                                    <Heart
-                                                        size={20}
-                                                        className={`transition-colors ${favorites[product._id]
-                                                                ? "fill-red-500 text-red-500"
-                                                                : "text-gray-400 hover:text-red-500"
-                                                            }`}
-                                                    />
-                                                </button>
-                                            </div>
-                                        </Link>
-
-                                        <div className="p-4 flex flex-col flex-grow">
-                                            <Link to={`/product/${product._id}`}>
-                                                <h3 className="font-serif font-bold text-lg mb-1 line-clamp-2 hover:text-primary">
-                                                    {product.title}
-                                                </h3>
-                                                <p className="text-sm text-neutral-600 mb-2">
-                                                    {product.author}
-                                                </p>
-                                                <p className="text-xs text-neutral-500 mb-3">
-                                                    {product.sku}
-                                                </p>
-                                            </Link>
-
-                                            <div className="flex justify-between items-center mb-4">
-                                                <div>
-                                                    {product.salePrice ? (
-                                                        <>
-                                                            <span className="text-primary font-bold">
-                                                                ${product.salePrice.toFixed(2)}
-                                                            </span>
-                                                            <span className="text-xs text-neutral-500 line-through ml-2">
-                                                                ${product.price.toFixed(2)}
-                                                            </span>
-                                                        </>
-                                                    ) : (
-                                                        <span className="text-primary font-bold">
-                                                            ${product.price.toFixed(2)}
-                                                        </span>
-                                                    )}
-                                                </div>
-                                                {product.isLimitedEdition && (
-                                                    <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded">
-                                                        Limited
-                                                    </span>
-                                                )}
-                                            </div>
-
-                                            {/* Action Buttons */}
-                                            <div className="flex gap-2 mt-auto">
-                                                <button
-                                                    onClick={() => handleAddToCart(product)}
-                                                    className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium rounded-lg transition-colors"
-                                                >
-                                                    <ShoppingCart size={16} />
-                                                    <span className="hidden sm:inline">Add</span>
-                                                </button>
-                                                <button
-                                                    onClick={() => handleBuyNow(product)}
-                                                    className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-primary hover:bg-primary-dark text-white font-medium rounded-lg transition-colors"
-                                                >
-                                                    <Zap size={16} />
-                                                    <span className="hidden sm:inline">Buy</span>
-                                                </button>
-                                            </div>
-                                        </div>
+                                    <motion.div key={product._id} variants={itemVariants}>
+                                      <BookCard
+                                        product={product}
+                                        isFavorite={favorites[product._id]}
+                                        onToggleFavorite={handleToggleFavorite}
+                                        onAddToCart={handleAddToCart}
+                                        onBuyNow={handleBuyNow}
+                                        variant="light"
+                                      />
                                     </motion.div>
                                 ))
                             ) : (

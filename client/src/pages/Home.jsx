@@ -4,6 +4,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { Link } from "react-router-dom";
 import { BookOpen, PenTool, Sparkles, ArrowRight, Star, ChevronRight, Mail } from "lucide-react";
 import api from "../config/api";
+import BookCard from "../components/BookCard";
 
 const Home = () => {
   const { user } = useSelector((state) => state.auth);
@@ -215,52 +216,7 @@ const Home = () => {
               {products.map((product) => (
                 <motion.div key={product._id} variants={itemFadeUp} className="group relative">
                   <div className="absolute -inset-0.5 bg-gradient-to-br from-accentPurple to-accentBlue rounded-3xl opacity-0 group-hover:opacity-20 blur transition duration-500"></div>
-                  <Link to={`/product/${product._id}`} className="block relative h-full">
-                    <div className="card-glass h-full flex flex-col p-4 bg-[#0a0a0a]">
-                      <div className="w-full aspect-[3/4] rounded-xl overflow-hidden relative bg-[#111]">
-                        {product.images && product.images.length > 0 && product.images[0]?.url ? (
-                          <img
-                            src={product.images[0].url}
-                            alt={product.title || "Product"}
-                            className="w-full h-full object-cover transition duration-700 group-hover:scale-105 group-hover:opacity-90"
-                            loading="lazy"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-secondaryText">No image</div>
-                        )}
-                        {/* Overlay Gradient for Image */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent opacity-60"></div>
-                      </div>
-                      
-                      <div className="pt-6 pb-2 flex-grow flex flex-col justify-between">
-                        <div>
-                          <h4 className="font-serif font-bold text-lg text-white mb-2 line-clamp-2 leading-tight">
-                            {product.title || "Untitled"}
-                          </h4>
-                          <p className="text-sm text-secondaryText mb-4">
-                            {product.author || "Unknown Author"}
-                          </p>
-                        </div>
-                        
-                        <div className="flex justify-between items-center mt-auto">
-                          <div className="flex items-center gap-2">
-                            {product.salePrice && product.salePrice > 0 ? (
-                              <>
-                                <span className="text-white font-semibold">${product.salePrice.toFixed(2)}</span>
-                                <span className="text-xs text-secondaryText line-through">${product.price?.toFixed(2)}</span>
-                              </>
-                            ) : (
-                              <span className="text-white font-semibold">${product.price?.toFixed(2) || "N/A"}</span>
-                            )}
-                          </div>
-                          
-                          <div className={`text-[10px] uppercase tracking-wider font-bold px-2 py-1 rounded-md ${product.stock > 0 ? 'bg-white/10 text-white' : 'bg-red-500/10 text-red-400'}`}>
-                            {product.stock > 0 ? 'In Stock' : 'Sold Out'}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </Link>
+                  <BookCard product={product} variant="dark" />
                 </motion.div>
               ))}
             </motion.div>
